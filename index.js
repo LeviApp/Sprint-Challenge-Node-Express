@@ -4,6 +4,9 @@ const morgan = require('morgan')
 
 const server = express()
 
+const projectDB = require('./data/helpers/projectModel.js')
+const actionDB = require('./data/helpers/actionModel.js')
+
 const NUM = 4444;
 
 server.use(
@@ -11,6 +14,19 @@ server.use(
     helmet(),
     morgan('dev'),
 )
+
+server.get('/api/projects', (req, res) => {
+    console.log(projectDB)
+        projectDB.get()
+        .then(users => {res.json(users)})
+        .catch( err => {
+            res
+            .status(500)
+            .json({"message": "Could not retrieve projects"})
+        }
+        )
+
+})
 
 server.listen(NUM, () => {
     console.log(`server listening on port ${NUM}`)
