@@ -15,17 +15,14 @@ server.use(
     morgan('dev'),
 )
 
-server.get('/api/projects', (req, res) => {
-        projectDB.get()
-        .then(users => {res.json(users)})
-        .catch( err => {
-            res
-            .status(500)
-            .json({"message": "Could not retrieve projects"})
-        }
-        )
-
-})
+server.get('/api/projects', (req,res) => {
+    projectDB.get()
+    .then((projects) => {res.json(projects)})
+    .catch(err => {
+        res
+        .status(500)
+        .json({message: 'Unable to get projects'})})
+} )
 
 server.get('/api/actions', (req, res) => {
         actionDB.get()
@@ -44,8 +41,7 @@ server.get('/api/projects/:id', (req, res) => {
 
     projectDB.get(id)
     .then(project => {
-        console.log(project)
-        if (project.length<1) {res.json(project)}
+        if (project) {res.json(project)}
 
         else {
             res
@@ -83,6 +79,58 @@ server.get('/api/actions/:id', (req, res) => {
     }
     )
 
+})
+
+server.post('/api/projects', (req,res) => {
+    const project = req.body;
+    if (project.name && project.description){
+        projectDB.insert(project)
+    .then(info => {
+        projectDB.get(info.id).then(response => {
+            res
+            .status(201)
+            .json(response)})
+        })
+        
+    .catch(err => {
+        res
+        .status(500)
+        .json({message: "failed to add project"})
+    })
+    }
+
+    else {
+        res
+        .status(400)
+        .json({message: "missing name or description"})
+    }
+    
+})
+
+server.post('/api/actions', (req,res) => {
+    const action = req.body;
+    if (action.project_id && action.description && action.notes){
+        actionDB.insert(action)
+    .then(info => {
+        actionDB.get(info.id).then(response => {
+            res
+            .status(201)
+            .json(response)})
+        })
+        
+    .catch(err => {
+        res
+        .status(500)
+        .json({message: "failed to add action"})
+    })
+    }
+
+    else {
+        res
+        .status(400)
+        .json({message: "missing project_id, description or notes"})
+    }
+    
 })
 
 server.listen(NUM, () => {
