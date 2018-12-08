@@ -16,9 +16,20 @@ server.use(
 )
 
 server.get('/api/projects', (req, res) => {
-    console.log(projectDB)
         projectDB.get()
         .then(users => {res.json(users)})
+        .catch( err => {
+            res
+            .status(500)
+            .json({"message": "Could not retrieve projects"})
+        }
+        )
+
+})
+
+server.get('/api/actions', (req, res) => {
+        actionDB.get()
+        .then(actions => {res.json(actions)})
         .catch( err => {
             res
             .status(500)
