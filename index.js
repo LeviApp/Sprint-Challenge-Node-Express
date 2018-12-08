@@ -175,6 +175,74 @@ server.delete('/api/actions/:id', (req,res) => {
     })
 })
 
+server.put('/api/projects/:id', (req,res) => {
+    const project = req.body;
+    const {id} = req.params;
+    if (project.name && project.description) {
+        projectDB.update(id, project)
+        .then(count => {
+            if (count) {
+                projectDB.get(id).then( data => {
+                    res.json(data)}
+                )
+            }
+
+            else { res
+                .status(404)
+                .json({message:"The project with the specified ID does not exist."})}
+        })
+        .catch(
+            err => {
+                res
+                .status(500)
+                .json({error: "The project could not be updated"})
+            }
+        )
+
+    }
+
+    else {
+        res
+        .status(400)
+        .json({message: "missing name or description"})
+    }
+
+})
+
+server.put('/api/actions/:id', (req,res) => {
+    const action = req.body;
+    const {id} = req.params;
+    if (action.project_id && action.description && action.notes) {
+        actionDB.update(id, action)
+        .then(count => {
+            if (count) {
+                actionDB.get(id).then( data => {
+                    res.json(data)}
+                )
+            }
+
+            else { res
+                .status(404)
+                .json({message:"The action with the specified ID does not exist."})}
+        })
+        .catch(
+            err => {
+                res
+                .status(500)
+                .json({error: "The action could not be updated"})
+            }
+        )
+
+    }
+
+    else {
+        res
+        .status(400)
+        .json({message: "missing project_id, description, or notes"})
+    }
+
+})
+
 server.listen(NUM, () => {
     console.log(`server listening on port ${NUM}`)
 })
